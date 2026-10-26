@@ -18,6 +18,9 @@ UK power trading dashboard showing the national wind forecast available at the d
 - `frontend/src/pages/`: Decision Desk, Forecast Revisions, Forecast Accuracy, and Method & limits.
 - `frontend/src/components/`, `api/`, `hooks/`, `types/`, `utils/`, `styles/`: reusable charts, skeletons and controls; typed API access, cached queries, MW axis and time formatting, and responsive styles.
 - `api/index.py`: Vercel Python entrypoint.
+- `vercel.json` and root `requirements.txt`: static-build routing and pinned Python function dependencies.
+- `DEPLOY.md`: one-project Vercel deployment and verification steps.
+- `scripts/smoke_test.py`: deployed HTML and snapshot API checks.
 - `data/`: committed 1 Jan–1 Feb 2026 delivery gzip CSVs, provenance, validation, and bias-diagnostic reports; raw responses are ignored.
 
 ## 3. How to run
@@ -49,18 +52,20 @@ PYTHONPATH=backend .venv/bin/uvicorn app.main:app --reload --port 8000
 .venv/bin/python backend/scripts/bias_diagnostics.py
 ```
 
-Vite proxies `/api` to the backend in local development. `vercel.json` builds `frontend/dist` and routes `/api/*` to `api/index.py`; deployment is not part of this setup.
+Vite proxies `/api` to the backend in local development. Docker Compose is for local development only; Vercel builds `frontend/dist` and runs `api/index.py` as a Python function.
 
 ## 4. Deployed app link
 
-_Not deployed yet._
+_Live URL: to be added after deployment and smoke testing._
+
+See [DEPLOY.md](DEPLOY.md) for the CLI and GitHub import steps, project settings, and verification checklist. From the repository root, run `python3 scripts/smoke_test.py https://YOUR-PROJECT.vercel.app` after deployment.
 
 ## 5. Design decisions and assumptions
 
 - Decision cutoff is 09:00 `Europe/London` on the day before delivery by default. API callers may override the hour from 0 through 23.
 - National-level wind only; generation values are MW. CSV timestamps are UTC; trading cutoffs use `Europe/London`.
 - The root `DESIGN.md`, `CLAUDE.md`, and `AGENTS.md` describe an unrelated project. This dashboard follows the supplied design brief.
-- `api/index.py` adds `backend/` to Python's import path so the same FastAPI app runs locally and on Vercel. The root `requirements.txt` forwards to the backend requirements for Vercel's Python runtime.
+- `api/index.py` adds `backend/` to Python's import path so the same FastAPI app runs locally and on Vercel. The root `requirements.txt` pins only the production FastAPI and pandas dependencies for Vercel; `backend/requirements.txt` also includes local development and test tools.
 
 ## 6. Data and methodology
 
