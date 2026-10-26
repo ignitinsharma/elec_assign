@@ -2,6 +2,8 @@
 
 Docker Compose is for local development only. Vercel serves the Vite static build and runs `api/index.py` as a Python function. The function reads the committed snapshot from `data/`; it does not fetch BMRS at runtime.
 
+Production URL: https://wind-decision-desk-k7m4.vercel.app
+
 ## CLI path
 
 Run from the repository root:

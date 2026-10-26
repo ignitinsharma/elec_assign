@@ -56,7 +56,7 @@ Vite proxies `/api` to the backend in local development. Docker Compose is for l
 
 ## 4. Deployed app link
 
-_Live URL: to be added after deployment and smoke testing._
+Live app: [Wind Forecast Decision Desk](https://wind-decision-desk-k7m4.vercel.app).
 
 See [DEPLOY.md](DEPLOY.md) for the CLI and GitHub import steps, project settings, and verification checklist. From the repository root, run `python3 scripts/smoke_test.py https://YOUR-PROJECT.vercel.app` after deployment.
 
