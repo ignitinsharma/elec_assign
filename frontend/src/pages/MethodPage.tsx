@@ -10,7 +10,7 @@ export function MethodPage() {
       <div className="page-title-row">
         <div>
           <span className="eyebrow">Reference / methodology</span>
-          <h1>Method &amp; limits</h1>
+          <h1 tabIndex={-1}>Method &amp; limits</h1>
           <p>
             What these numbers mean, which records they use, and where the
             evidence stops.
@@ -52,9 +52,14 @@ export function MethodPage() {
           <span className="eyebrow">04 / Provenance</span>
           <h2>Committed snapshot</h2>
           <p>
+            The snapshot covers decisions made 31 Dec 2025 to 31 Jan 2026 for
+            delivery days 1 Jan to 1 Feb 2026: each day-ahead purchase decision
+            is made on the preceding day. We retain 1 Jan delivery so both the
+            January-delivery and January-decision readings are available.
             Available delivery dates: {first} to {last}. All runtime analysis
             reads the committed snapshot; the live BMRS API is not called by the
-            dashboard.
+            dashboard. Accuracy defaults to delivery 2 Jan–1 Feb, whose
+            decisions were made in January.
           </p>
           <p>
             Source datasets:{' '}
@@ -82,8 +87,8 @@ export function MethodPage() {
         <h2>Limits of this analysis</h2>
         <ul>
           <li>
-            The snapshot covers one month and national wind only; it does not
-            establish performance in other seasons or regions.
+            The snapshot covers roughly one month and national wind only; it
+            does not establish performance in other seasons or regions.
           </li>
           <li>
             Documentation does not establish a matched list of wind farms for

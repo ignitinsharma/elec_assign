@@ -11,11 +11,15 @@ import {
 import type { PointsResponse } from '../types/analytics'
 import { formatLondon, formatMw } from '../utils/format'
 import { ChartPanel } from './ChartPanel'
+import { formatAxisTick, niceAxis } from '../utils/chartAxes'
+import { useReducedMotion } from '../hooks/useReducedMotion'
 
 export function ScatterPanel({ data }: { data: PointsResponse }) {
-  const axisMax = Math.max(
-    ...data.rows.flatMap((row) => [row.forecast_mw, row.actual_mw]),
+  const reducedMotion = useReducedMotion()
+  const axis = niceAxis(
+    data.rows.flatMap((row) => [row.forecast_mw, row.actual_mw]),
   )
+  const axisMax = axis.domain[1]
   return (
     <ChartPanel
       title="Forecast vs actual"
@@ -54,8 +58,9 @@ export function ScatterPanel({ data }: { data: PointsResponse }) {
             type="number"
             dataKey="actual_mw"
             name="Actual"
-            domain={[0, axisMax]}
-            tickFormatter={(value: number) => `${Math.round(value / 1000)}k`}
+            domain={axis.domain}
+            ticks={axis.ticks}
+            tickFormatter={formatAxisTick}
             label={{
               value: 'Actual MW',
               position: 'insideBottom',
@@ -66,8 +71,9 @@ export function ScatterPanel({ data }: { data: PointsResponse }) {
             type="number"
             dataKey="forecast_mw"
             name="Forecast"
-            domain={[0, axisMax]}
-            tickFormatter={(value: number) => `${Math.round(value / 1000)}k`}
+            domain={axis.domain}
+            ticks={axis.ticks}
+            tickFormatter={formatAxisTick}
             label={{ value: 'Forecast MW', angle: -90, position: 'insideLeft' }}
           />
           <Tooltip
@@ -86,7 +92,8 @@ export function ScatterPanel({ data }: { data: PointsResponse }) {
             data={data.rows}
             fill="var(--forecast)"
             fillOpacity={0.5}
-            isAnimationActive={false}
+            isAnimationActive={!reducedMotion}
+            animationDuration={400}
           />
         </ScatterChart>
       </ResponsiveContainer>

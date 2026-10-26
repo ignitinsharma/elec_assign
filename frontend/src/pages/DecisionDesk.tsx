@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import {
   Area,
   CartesianGrid,
@@ -15,10 +16,13 @@ import { DayCutoffControls } from '../components/Controls'
 import { useDashboard } from '../hooks/useDashboard'
 import { MetricCard } from '../components/MetricCard'
 import { PageState } from '../components/PageState'
-import { useDecision } from '../hooks/useWindData'
+import { decisionOptions, useDecision } from '../hooks/useWindData'
+import { useReducedMotion } from '../hooks/useReducedMotion'
+import { formatAxisTick, niceAxis } from '../utils/chartAxes'
 import type { DecisionRow } from '../types/analytics'
 import {
   decisionBanner,
+  deliveryDecisionLabel,
   downloadRows,
   formatHour,
   formatLondon,
@@ -88,6 +92,18 @@ function DecisionTooltip({
 export function DecisionDesk() {
   const { meta, day, setDay, cutoff, setCutoff } = useDashboard()
   const query = useDecision(day, cutoff)
+  const queryClient = useQueryClient()
+  const reducedMotion = useReducedMotion()
+  useEffect(() => {
+    const index = meta.available_delivery_dates.indexOf(day)
+    for (const neighbor of [
+      meta.available_delivery_dates[index - 1],
+      meta.available_delivery_dates[index + 1],
+    ]) {
+      if (neighbor)
+        void queryClient.prefetchQuery(decisionOptions(neighbor, cutoff))
+    }
+  }, [day, cutoff, meta, queryClient])
   const [tableView, setTableView] = useState(false)
   const data = query.data
   const peak = data ? peakShortfall(data.rows) : undefined
@@ -97,13 +113,16 @@ export function DecisionDesk() {
       shortfallBand: row.error_mw > 0 ? [row.actual_mw, row.forecast_mw] : null,
       hour: formatHour(row.startTime).slice(0, 5),
     })) ?? []
+  const axis = niceAxis(
+    chartRows.flatMap((row) => [row.forecast_mw, row.actual_mw]),
+  )
 
   return (
     <>
       <div className="page-title-row">
         <div>
           <span className="eyebrow">01 / Decision view</span>
-          <h1>Decision Desk</h1>
+          <h1 tabIndex={-1}>Decision Desk</h1>
           <p>
             The forecast your team could have used, alongside what wind actually
             delivered.
@@ -118,11 +137,27 @@ export function DecisionDesk() {
         />
       </div>
       {query.isPending || query.isError || !data ? (
-        <PageState query={query} label="decision forecast" />
+        <PageState query={query} label="decision forecast" kind="decision" />
       ) : data.rows.length === 0 ? (
         <PageState query={query} label="hourly forecasts" />
       ) : (
-        <>
+        <div
+          className={`data-content data-crossfade ${query.isPlaceholderData ? 'is-updating' : ''}`}
+          key={`${data.date}-${data.cutoff_hour}`}
+          aria-busy={query.isPlaceholderData}
+        >
+          {query.isPlaceholderData && (
+            <span className="updating-indicator" role="status">
+              Updating…
+            </span>
+          )}
+          <p className="basis-note">
+            {deliveryDecisionLabel(
+              data.date,
+              data.decision_date,
+              data.cutoff_hour,
+            )}
+          </p>
           <div className="decision-banner">
             <span className="banner-icon" aria-hidden="true">
               ◷
@@ -183,7 +218,7 @@ export function DecisionDesk() {
               >
                 Table
               </button>
-              <button onClick={() => downloadRows(data.rows, day)}>
+              <button onClick={() => downloadRows(data.rows, data.date)}>
                 Download CSV
               </button>
             </div>
@@ -205,9 +240,9 @@ export function DecisionDesk() {
                   <CartesianGrid strokeDasharray="3 5" vertical={false} />
                   <XAxis dataKey="hour" interval={3} />
                   <YAxis
-                    tickFormatter={(value: number) =>
-                      `${Math.round(value / 1000)}k`
-                    }
+                    domain={axis.domain}
+                    ticks={axis.ticks}
+                    tickFormatter={formatAxisTick}
                     label={{ value: 'MW', angle: -90, position: 'insideLeft' }}
                   />
                   <Tooltip content={<DecisionTooltip />} />
@@ -219,7 +254,8 @@ export function DecisionDesk() {
                     stroke="var(--warning)"
                     strokeWidth={0}
                     connectNulls={false}
-                    isAnimationActive={false}
+                    isAnimationActive={!reducedMotion}
+                    animationDuration={400}
                   />
                   <Line
                     dataKey="forecast_mw"
@@ -227,7 +263,8 @@ export function DecisionDesk() {
                     stroke="var(--forecast)"
                     strokeWidth={3}
                     dot={false}
-                    isAnimationActive={false}
+                    isAnimationActive={!reducedMotion}
+                    animationDuration={400}
                   />
                   <Line
                     dataKey="actual_mw"
@@ -235,13 +272,14 @@ export function DecisionDesk() {
                     stroke="var(--actual)"
                     strokeWidth={3}
                     dot={false}
-                    isAnimationActive={false}
+                    isAnimationActive={!reducedMotion}
+                    animationDuration={400}
                   />
                 </ComposedChart>
               </ResponsiveContainer>
             </ChartPanel>
           )}
-        </>
+        </div>
       )}
     </>
   )

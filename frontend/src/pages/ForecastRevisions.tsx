@@ -13,10 +13,44 @@ import { useDashboard } from '../hooks/useDashboard'
 import { PageState } from '../components/PageState'
 import { useVintages } from '../hooks/useWindData'
 import { formatHour, formatLondon, formatMw } from '../utils/format'
+import { deliveryDecisionLabel } from '../utils/format'
+import { formatAxisTick, niceAxis } from '../utils/chartAxes'
+import {
+  summarizeVintageHour,
+  type VintageHourSummary,
+} from '../utils/vintageTooltip'
+import { useReducedMotion } from '../hooks/useReducedMotion'
+
+function RevisionsTooltip({
+  active,
+  payload,
+}: {
+  active?: boolean
+  payload?: { payload: { summary: VintageHourSummary | null } }[]
+}) {
+  const summary = payload?.[0]?.payload.summary
+  if (!active || !summary) return null
+  return (
+    <div className="chart-tooltip compact-tooltip">
+      <strong>{formatLondon(summary.hour)}</strong>
+      <span>Actual: {formatMw(summary.actualMw)}</span>
+      <span>Selected: {formatMw(summary.selectedMw)}</span>
+      <span>Published: {formatLondon(summary.selectedPublishTime)}</span>
+      <span>
+        Other vintages:{' '}
+        {summary.otherMinMw == null
+          ? '—'
+          : `${formatMw(summary.otherMinMw)}–${formatMw(summary.otherMaxMw)}`}
+      </span>
+      <span>Vintages: {summary.vintageCount}</span>
+    </div>
+  )
+}
 
 export function ForecastRevisions() {
   const { meta, day, setDay, cutoff, setCutoff } = useDashboard()
   const query = useVintages(day, cutoff)
+  const reducedMotion = useReducedMotion()
   const data = query.data
   const rows =
     data?.selected_rows.map((row) => ({
@@ -25,6 +59,7 @@ export function ForecastRevisions() {
       localTime: formatLondon(row.startTime),
       selected: row.forecast_mw,
       actual: row.actual_mw,
+      summary: summarizeVintageHour(data, row.startTime),
     })) ?? []
   const byStart = new Map(rows.map((row) => [row.startTime, row]))
   data?.vintages.forEach((vintage, index) =>
@@ -33,13 +68,24 @@ export function ForecastRevisions() {
       if (target) Object.assign(target, { [`v${index}`]: row.forecast_mw })
     }),
   )
+  const axis = niceAxis(
+    rows.flatMap((row) => [
+      row.selected,
+      row.actual,
+      ...data!.vintages.flatMap((vintage) =>
+        vintage.rows
+          .filter((item) => item.startTime === row.startTime)
+          .map((item) => item.forecast_mw),
+      ),
+    ]),
+  )
 
   return (
     <>
       <div className="page-title-row">
         <div>
           <span className="eyebrow">02 / Forecast history</span>
-          <h1>Forecast Revisions</h1>
+          <h1 tabIndex={-1}>Forecast Revisions</h1>
           <p>
             See every published view of the delivery day available before the
             decision cutoff.
@@ -54,11 +100,27 @@ export function ForecastRevisions() {
         />
       </div>
       {query.isPending || query.isError || !data ? (
-        <PageState query={query} label="forecast vintages" />
+        <PageState query={query} label="forecast vintages" kind="revisions" />
       ) : data.vintages.length === 0 ? (
         <PageState query={query} label="forecast vintages" />
       ) : (
-        <>
+        <div
+          className={`data-content data-crossfade ${query.isPlaceholderData ? 'is-updating' : ''}`}
+          key={`${data.date}-${data.cutoff_hour}`}
+          aria-busy={query.isPlaceholderData}
+        >
+          {query.isPlaceholderData && (
+            <span className="updating-indicator" role="status">
+              Updating…
+            </span>
+          )}
+          <p className="basis-note">
+            {deliveryDecisionLabel(
+              data.date,
+              data.decision_date,
+              data.cutoff_hour,
+            )}
+          </p>
           <div className="decision-banner">
             <span className="banner-icon" aria-hidden="true">
               ↗
@@ -111,16 +173,16 @@ export function ForecastRevisions() {
                 <CartesianGrid strokeDasharray="3 5" vertical={false} />
                 <XAxis dataKey="hour" interval={3} />
                 <YAxis
-                  tickFormatter={(value: number) =>
-                    `${Math.round(value / 1000)}k`
-                  }
+                  domain={axis.domain}
+                  ticks={axis.ticks}
+                  tickFormatter={formatAxisTick}
                   label={{ value: 'MW', angle: -90, position: 'insideLeft' }}
                 />
                 <Tooltip
-                  formatter={(value, name) => [formatMw(Number(value)), name]}
-                  labelFormatter={(_, payload) =>
-                    String(payload?.[0]?.payload?.localTime ?? '')
-                  }
+                  content={<RevisionsTooltip />}
+                  offset={24}
+                  cursor={false}
+                  wrapperStyle={{ pointerEvents: 'none' }}
                 />
                 {data.vintages.map((vintage, index) => (
                   <Line
@@ -132,7 +194,8 @@ export function ForecastRevisions() {
                     strokeWidth={1.3}
                     dot={false}
                     connectNulls={false}
-                    isAnimationActive={false}
+                    isAnimationActive={!reducedMotion}
+                    animationDuration={400}
                   />
                 ))}
                 <Line
@@ -141,7 +204,8 @@ export function ForecastRevisions() {
                   stroke="var(--forecast)"
                   strokeWidth={3.5}
                   dot={false}
-                  isAnimationActive={false}
+                  isAnimationActive={!reducedMotion}
+                  animationDuration={400}
                 />
                 <Line
                   dataKey="actual"
@@ -149,7 +213,8 @@ export function ForecastRevisions() {
                   stroke="var(--actual)"
                   strokeWidth={3}
                   dot={false}
-                  isAnimationActive={false}
+                  isAnimationActive={!reducedMotion}
+                  animationDuration={400}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -159,7 +224,7 @@ export function ForecastRevisions() {
             were last revised in different releases. Times shown in
             Europe/London.
           </p>
-        </>
+        </div>
       )}
     </>
   )

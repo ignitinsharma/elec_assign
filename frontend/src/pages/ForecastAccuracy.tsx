@@ -13,7 +13,12 @@ import {
   usePoints,
 } from '../hooks/useWindData'
 import type { DiagnosticsResponse, Metrics } from '../types/analytics'
-import { formatMw, formatPercent, SIGN_CONVENTION } from '../utils/format'
+import {
+  formatDate,
+  formatMw,
+  formatPercent,
+  SIGN_CONVENTION,
+} from '../utils/format'
 
 function AccuracySummary({ metrics }: { metrics: Metrics }) {
   return (
@@ -78,7 +83,7 @@ function BiasIllustration({ data }: { data: DiagnosticsResponse }) {
   return (
     <section className="illustration-card">
       <span className="eyebrow">
-        Retrospective illustration · January 2026 only
+        Retrospective illustration · full committed snapshot
       </span>
       <h2>Illustrative bias adjustment</h2>
       <p>
@@ -113,8 +118,8 @@ function BiasIllustration({ data }: { data: DiagnosticsResponse }) {
 
 export function ForecastAccuracy() {
   const { meta, cutoff, setCutoff } = useDashboard()
-  const [start, setStart] = useState(meta.available_delivery_dates[0])
-  const [end, setEnd] = useState(meta.available_delivery_dates.at(-1) ?? start)
+  const [start, setStart] = useState(meta.accuracy_default_start)
+  const [end, setEnd] = useState(meta.accuracy_default_end)
   const validRange = start <= end
   const accuracy = useAccuracy(start, end, cutoff)
   const points = usePoints(start, end, cutoff)
@@ -127,7 +132,7 @@ export function ForecastAccuracy() {
       <div className="page-title-row">
         <div>
           <span className="eyebrow">03 / Performance review</span>
-          <h1>Forecast Accuracy</h1>
+          <h1 tabIndex={-1}>Forecast Accuracy</h1>
           <p>
             Measure the uncertainty that matters at the day-ahead decision
             point.
@@ -148,14 +153,36 @@ export function ForecastAccuracy() {
           The start date must be on or before the end date.
         </div>
       ) : accuracy.isPending || accuracy.isError || !data ? (
-        <PageState query={accuracy} label="accuracy analysis" />
+        <PageState query={accuracy} label="accuracy analysis" kind="accuracy" />
       ) : data.overall.n === 0 ? (
         <PageState query={accuracy} label="accuracy observations" />
       ) : (
-        <>
+        <div
+          className={`data-content data-crossfade ${accuracy.isPlaceholderData ? 'is-updating' : ''}`}
+          key={`${data.start}-${data.end}-${data.cutoff_hour}`}
+          aria-busy={accuracy.isPlaceholderData}
+        >
+          {accuracy.isPlaceholderData && (
+            <span className="updating-indicator" role="status">
+              Updating…
+            </span>
+          )}
           <p className="basis-note">
-            {data.basis}. {data.overall.n} hourly comparisons · {start} to {end}{' '}
-            · cutoff {String(cutoff).padStart(2, '0')}:00 Europe/London.
+            {data.basis}. {data.overall.n} hourly comparisons · delivery{' '}
+            {formatDate(data.start)} to {formatDate(data.end)} · decisions{' '}
+            {formatDate(
+              meta.available_delivery_decisions.find(
+                (item) => item.delivery_date === data.start,
+              )?.decision_date ?? data.start,
+            )}{' '}
+            to{' '}
+            {formatDate(
+              meta.available_delivery_decisions.find(
+                (item) => item.delivery_date === data.end,
+              )?.decision_date ?? data.end,
+            )}{' '}
+            · cutoff {String(data.cutoff_hour).padStart(2, '0')}:00
+            Europe/London.
           </p>
           <AccuracySummary metrics={data.overall} />
           <div className="chart-grid">
@@ -177,22 +204,44 @@ export function ForecastAccuracy() {
               description={`Actual wind terciles; thresholds ${data.breakdowns.wind_band_thresholds_mw.map((value) => formatMw(value)).join(' and ')}. MAE and signed bias in MW.`}
             />
             {points.isPending || points.isError || !points.data ? (
-              <PageState query={points} label="scatter observations" />
+              <PageState
+                query={points}
+                label="scatter observations"
+                kind="chart"
+              />
             ) : (
-              <ScatterPanel data={points.data} />
+              <div
+                className={points.isPlaceholderData ? 'is-updating' : ''}
+                aria-busy={points.isPlaceholderData}
+              >
+                {points.isPlaceholderData && (
+                  <span className="updating-indicator" role="status">
+                    Updating…
+                  </span>
+                )}
+                <ScatterPanel data={points.data} />
+              </div>
             )}
           </div>
           {horizon.isPending || horizon.isError || !horizon.data ? (
-            <PageState query={horizon} label="all-vintages horizon analysis" />
+            <PageState
+              query={horizon}
+              label="all-vintages horizon analysis"
+              kind="chart"
+            />
           ) : (
             <HorizonPanel data={horizon.data} />
           )}
           {diagnostics.isPending || diagnostics.isError || !diagnostics.data ? (
-            <PageState query={diagnostics} label="bias illustration" />
+            <PageState
+              query={diagnostics}
+              label="bias illustration"
+              kind="card"
+            />
           ) : (
             <BiasIllustration data={diagnostics.data} />
           )}
-        </>
+        </div>
       )}
     </>
   )

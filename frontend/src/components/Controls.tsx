@@ -1,4 +1,5 @@
 import type { MetaResponse } from '../types/analytics'
+import { deliveryDecisionLabel } from '../utils/format'
 
 export function DayCutoffControls({
   meta,
@@ -18,16 +19,13 @@ export function DayCutoffControls({
       <label>
         Delivery day{' '}
         <select value={day} onChange={(event) => onDay(event.target.value)}>
-          {meta.available_delivery_dates.map((date) => (
-            <option key={date} value={date}>
-              {new Date(`${date}T12:00:00Z`).toLocaleDateString('en-GB', {
-                day: 'numeric',
-                month: 'short',
-                year: 'numeric',
-                timeZone: 'Europe/London',
-              })}
-            </option>
-          ))}
+          {meta.available_delivery_decisions.map(
+            ({ delivery_date: date, decision_date: decisionDate }) => (
+              <option key={date} value={date}>
+                {deliveryDecisionLabel(date, decisionDate, cutoff)}
+              </option>
+            ),
+          )}
         </select>
       </label>
       <CutoffControl value={cutoff} onChange={onCutoff} />
@@ -76,11 +74,13 @@ export function RangeControls({
   cutoff: number
   onCutoff: (value: number) => void
 }) {
-  const options = meta.available_delivery_dates.map((day) => (
-    <option key={day} value={day}>
-      {day}
-    </option>
-  ))
+  const options = meta.available_delivery_decisions.map(
+    ({ delivery_date: day, decision_date: decisionDate }) => (
+      <option key={day} value={day}>
+        {deliveryDecisionLabel(day, decisionDate, cutoff)}
+      </option>
+    ),
+  )
   return (
     <div className="controls">
       <label>

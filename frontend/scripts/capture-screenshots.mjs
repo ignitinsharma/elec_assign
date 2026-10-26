@@ -30,6 +30,9 @@ try {
     })
     const pageErrors = []
     page.on('pageerror', (error) => pageErrors.push(error.message))
+    page.on('console', (message) => {
+      if (message.type() === 'error') pageErrors.push(message.text())
+    })
     for (const view of views) {
       await page.goto(new URL(view.path, base).href, {
         waitUntil: 'networkidle',
@@ -72,6 +75,37 @@ try {
     console.log(`${size.name} controls: day, cutoff and 24-row table verified`)
     await page.close()
   }
+
+  const skeletonPage = await browser.newPage({
+    viewport: sizes[0],
+    reducedMotion: 'reduce',
+  })
+  const skeletonErrors = []
+  skeletonPage.on('pageerror', (error) => skeletonErrors.push(error.message))
+  await skeletonPage.route('**/api/meta', async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 8000))
+    await route.continue()
+  })
+  await skeletonPage.goto(new URL('/', base).href, {
+    waitUntil: 'domcontentloaded',
+  })
+  await skeletonPage.locator('.skeleton-banner').waitFor()
+  if (skeletonErrors.length)
+    throw new Error(`skeleton: ${skeletonErrors.join('; ')}`)
+  if (
+    await skeletonPage.evaluate(
+      () => document.documentElement.scrollWidth > innerWidth + 2,
+    )
+  )
+    throw new Error('skeleton: horizontal page overflow')
+  const skeletonFile = resolve(output, 'decision-skeleton-desktop.png')
+  await skeletonPage.screenshot({
+    path: skeletonFile,
+    fullPage: true,
+    animations: 'disabled',
+  })
+  console.log(`decision skeleton desktop: ${skeletonFile}`)
+  await skeletonPage.close()
 } finally {
   await browser.close()
 }
