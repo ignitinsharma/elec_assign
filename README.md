@@ -13,10 +13,11 @@ Backend foundation for a UK power trading tool that shows the national wind fore
 - `backend/app/schemas/`: Pydantic response models.
 - `backend/scripts/fetch_data.py`: chunked BMRS fetcher, retry logic, CSV writer, and validation report.
 - `backend/scripts/sanity_check.py`: reproducible real-snapshot coverage and sensitivity checks.
+- `backend/scripts/bias_diagnostics.py`: snapshot-only alignment, bias, horizon, and illustrative correction analysis.
 - `backend/tests/`: offline selection, metrics, API, fetch, and health tests.
 - `frontend/src/`: React app, with folders reserved for components, pages, API calls, hooks, types, and styles.
 - `api/index.py`: Vercel Python entrypoint.
-- `data/`: committed January 2026 gzip CSVs, `metadata.json`, and `validation_report.json`; raw responses are ignored.
+- `data/`: committed January 2026 gzip CSVs, provenance, validation, and bias-diagnostic reports; raw responses are ignored.
 
 ## 3. How to run
 
@@ -44,6 +45,7 @@ PYTHONPATH=backend .venv/bin/uvicorn app.main:app --reload --port 8000
 .venv/bin/python backend/scripts/fetch_data.py --help
 .venv/bin/python backend/scripts/fetch_data.py
 .venv/bin/python backend/scripts/sanity_check.py
+.venv/bin/python backend/scripts/bias_diagnostics.py
 ```
 
 Vite proxies `/api` to the backend in local development. `vercel.json` builds `frontend/dist` and routes `/api/*` to `api/index.py`; deployment is not part of this setup.
@@ -74,6 +76,14 @@ WINDFOR forecasts have hourly `:00` start times. Accuracy joins them to FUELHH a
 Error is `forecast_mw − actual_mw`. Positive error means wind underdelivered versus forecast, so the buyer would need to procure more power. `shortfall_mw = max(error_mw, 0)`. MAE is mean absolute error; RMSE is root mean squared error; bias is mean signed error; MAPE is mean absolute percentage error (zero actuals excluded); nMAE is MAE divided by mean actual MW. Error standard deviation uses the population denominator. P50/P90/P95 absolute errors and P90/P95 shortfalls use linear-interpolated quantiles. Wind-level bands are terciles of actual MW within the requested date range. Horizon buckets are left-closed, right-open six-hour intervals.
 
 `/api/accuracy/horizon` uses **all** forecast vintages with nonnegative horizon, including those published after a delivery day’s decision cutoff. It is a separate lead-time analysis, not decision-time performance. Metrics retain full precision internally and are rounded only in API responses.
+
+### Bias diagnostics
+
+Run `.venv/bin/python backend/scripts/bias_diagnostics.py` to print the January 2026 cutoff-9 analysis and regenerate [`data/bias_diagnostics.json`](data/bias_diagnostics.json). It uses only the committed FUELHH WIND and WINDFOR snapshot. A shift compares a forecast for time `t` with the observed actual at `t + shift`; the ±30-minute checks use observed half-hourly FUELHH rows. No interpolation is used.
+
+The lowest shift-test MAE occurs at −2 hours (2,077.9 MW versus 2,127.5 MW unshifted), a 2.3% improvement; bias remains +1,829.0 MW versus +1,851.5 MW unshifted. At 09:00 cutoff, 27 of 31 days have positive bias, with a 12-day positive run. The latest 0–6-hour vintages cover the same 744 delivery hours and reduce mean bias to +1,592.5 MW, so bias **does shrink** as delivery nears, but remains substantial. An illustrative leave-one-day-out constant correction reduces MAE to 1,468.8 MW and P90/P95 shortfall to 2,482.6/3,594.4 MW; it uses other days including future days and is **not for production**.
+
+Elexon's [FUELHH dataset documentation](https://bmrs.elexon.co.uk/api-documentation/endpoint/datasets/FUELHH/stream) describes half-hourly GB fuel-type outturn. Its [generation-by-fuel-type explanation](https://bmrs.elexon.co.uk/generation-by-fuel-type) says the data come from “Operational Metering for BMUs connected to the transmission system” and exclude embedded generation and wind farms without operational meters. Elexon's [WINDFOR dataset documentation](https://bmrs.elexon.co.uk/api-documentation/endpoint/datasets/WINDFOR/stream) describes wind forecasts; its [wind-generation explanation](https://bmrs.elexon.co.uk/wind-generation) says they cover “wind farms which are visible to the ESO and have operational metering.” The documents do not identify a matched asset list or establish identical coverage for these two January 2026 series. The persistent positive gap is consistent with a forecast-level calibration or coverage mismatch; the diagnostics strongly disfavor a simple timestamp offset, but cannot identify the underlying cause from these two datasets alone.
 
 ### API
 

@@ -1,0 +1,330 @@
+{
+  "analysed_at_utc": "2026-10-26T05:04:56.218421Z",
+  "basis": "January 2026; cutoff 09:00 Europe/London on D-1; error = forecast - actual MW; exact hourly :00 actuals",
+  "time_alignment": {
+    "shift_definition": "forecast at t compared with actual at t + shift; no interpolation",
+    "rows": [
+      {
+        "shift_minutes": -180,
+        "n": 741,
+        "mae_mw": 2130.9082321187584,
+        "bias_mw": 1817.3373819163294,
+        "rmse_mw": 2690.0287455382077,
+        "pearson_r": 0.9137316268581906
+      },
+      {
+        "shift_minutes": -120,
+        "n": 742,
+        "mae_mw": 2077.8625336927225,
+        "bias_mw": 1828.989218328841,
+        "rmse_mw": 2619.9849802042677,
+        "pearson_r": 0.9241569847494272
+      },
+      {
+        "shift_minutes": -60,
+        "n": 743,
+        "mae_mw": 2078.3324360699867,
+        "bias_mw": 1840.1816958277254,
+        "rmse_mw": 2592.616744030372,
+        "pearson_r": 0.9288597859589295
+      },
+      {
+        "shift_minutes": -30,
+        "n": 743,
+        "mae_mw": 2094.415881561238,
+        "bias_mw": 1840.5558546433379,
+        "rmse_mw": 2591.748140533129,
+        "pearson_r": 0.9289418664667614
+      },
+      {
+        "shift_minutes": 0,
+        "n": 744,
+        "mae_mw": 2127.4825268817203,
+        "bias_mw": 1851.5282258064517,
+        "rmse_mw": 2606.0679164624726,
+        "pearson_r": 0.9282779618215823
+      },
+      {
+        "shift_minutes": 30,
+        "n": 744,
+        "mae_mw": 2162.8494623655915,
+        "bias_mw": 1852.279569892473,
+        "rmse_mw": 2625.5200816075912,
+        "pearson_r": 0.9257521454762786
+      },
+      {
+        "shift_minutes": 60,
+        "n": 743,
+        "mae_mw": 2196.1534320323017,
+        "bias_mw": 1858.1776581426648,
+        "rmse_mw": 2654.548941111032,
+        "pearson_r": 0.9226306596786106
+      },
+      {
+        "shift_minutes": 120,
+        "n": 742,
+        "mae_mw": 2274.8032345013476,
+        "bias_mw": 1865.1132075471698,
+        "rmse_mw": 2740.642510793346,
+        "pearson_r": 0.9118326011693192
+      },
+      {
+        "shift_minutes": 180,
+        "n": 741,
+        "mae_mw": 2361.8744939271255,
+        "bias_mw": 1872.1336032388665,
+        "rmse_mw": 2859.429671671165,
+        "pearson_r": 0.8960943420285722
+      }
+    ],
+    "best_mae_shift_minutes": -120,
+    "best_mae_reduction_percent": 2.3323337588923225
+  },
+  "bias_structure": {
+    "ols_actual_on_forecast": {
+      "intercept_mw": 891.2492434856447,
+      "slope": 0.7958124956257429,
+      "r_squared": 0.8616999744036314,
+      "median_forecast_actual_ratio": 1.1582943169555744
+    },
+    "wind_tercile_thresholds_mw": [
+      9365.66666666666,
+      14657.999999999998
+    ],
+    "by_wind_level": [
+      {
+        "band": "low",
+        "n": 248,
+        "bias_mw": 1480.483870967742
+      },
+      {
+        "band": "medium",
+        "n": 248,
+        "bias_mw": 1692.375
+      },
+      {
+        "band": "high",
+        "n": 248,
+        "bias_mw": 2381.7258064516127
+      }
+    ],
+    "by_delivery_day": [
+      {
+        "delivery_day": "2026-01-01",
+        "n": 24,
+        "bias_mw": 4223.25
+      },
+      {
+        "delivery_day": "2026-01-02",
+        "n": 24,
+        "bias_mw": 3070.375
+      },
+      {
+        "delivery_day": "2026-01-03",
+        "n": 24,
+        "bias_mw": 2098.5
+      },
+      {
+        "delivery_day": "2026-01-04",
+        "n": 24,
+        "bias_mw": 1102.5416666666667
+      },
+      {
+        "delivery_day": "2026-01-05",
+        "n": 24,
+        "bias_mw": -115.29166666666667
+      },
+      {
+        "delivery_day": "2026-01-06",
+        "n": 24,
+        "bias_mw": 1938.0833333333333
+      },
+      {
+        "delivery_day": "2026-01-07",
+        "n": 24,
+        "bias_mw": 1371.9166666666667
+      },
+      {
+        "delivery_day": "2026-01-08",
+        "n": 24,
+        "bias_mw": 875.9583333333334
+      },
+      {
+        "delivery_day": "2026-01-09",
+        "n": 24,
+        "bias_mw": 816.375
+      },
+      {
+        "delivery_day": "2026-01-10",
+        "n": 24,
+        "bias_mw": -105.29166666666667
+      },
+      {
+        "delivery_day": "2026-01-11",
+        "n": 24,
+        "bias_mw": 4853.0
+      },
+      {
+        "delivery_day": "2026-01-12",
+        "n": 24,
+        "bias_mw": 4875.416666666667
+      },
+      {
+        "delivery_day": "2026-01-13",
+        "n": 24,
+        "bias_mw": 110.25
+      },
+      {
+        "delivery_day": "2026-01-14",
+        "n": 24,
+        "bias_mw": -10.5
+      },
+      {
+        "delivery_day": "2026-01-15",
+        "n": 24,
+        "bias_mw": 1025.2083333333333
+      },
+      {
+        "delivery_day": "2026-01-16",
+        "n": 24,
+        "bias_mw": 348.8333333333333
+      },
+      {
+        "delivery_day": "2026-01-17",
+        "n": 24,
+        "bias_mw": 1659.4166666666667
+      },
+      {
+        "delivery_day": "2026-01-18",
+        "n": 24,
+        "bias_mw": 1594.5
+      },
+      {
+        "delivery_day": "2026-01-19",
+        "n": 24,
+        "bias_mw": -683.625
+      },
+      {
+        "delivery_day": "2026-01-20",
+        "n": 24,
+        "bias_mw": 414.7916666666667
+      },
+      {
+        "delivery_day": "2026-01-21",
+        "n": 24,
+        "bias_mw": 3677.125
+      },
+      {
+        "delivery_day": "2026-01-22",
+        "n": 24,
+        "bias_mw": 2646.7916666666665
+      },
+      {
+        "delivery_day": "2026-01-23",
+        "n": 24,
+        "bias_mw": 1541.5416666666667
+      },
+      {
+        "delivery_day": "2026-01-24",
+        "n": 24,
+        "bias_mw": 1946.9583333333333
+      },
+      {
+        "delivery_day": "2026-01-25",
+        "n": 24,
+        "bias_mw": 1794.5
+      },
+      {
+        "delivery_day": "2026-01-26",
+        "n": 24,
+        "bias_mw": 2070.75
+      },
+      {
+        "delivery_day": "2026-01-27",
+        "n": 24,
+        "bias_mw": 3418.625
+      },
+      {
+        "delivery_day": "2026-01-28",
+        "n": 24,
+        "bias_mw": 5328.958333333333
+      },
+      {
+        "delivery_day": "2026-01-29",
+        "n": 24,
+        "bias_mw": 1799.9166666666667
+      },
+      {
+        "delivery_day": "2026-01-30",
+        "n": 24,
+        "bias_mw": 1393.4166666666667
+      },
+      {
+        "delivery_day": "2026-01-31",
+        "n": 24,
+        "bias_mw": 2315.0833333333335
+      }
+    ],
+    "positive_day_run": {
+      "positive_days": 27,
+      "positive_days_percent": 87.09677419354838,
+      "longest_run_days": 12,
+      "longest_run_start": "2026-01-20",
+      "longest_run_end": "2026-01-31"
+    }
+  },
+  "horizon_check": {
+    "window": "0 <= horizon_hours <= 6; latest eligible vintage per startTime",
+    "decision_full": {
+      "n": 744,
+      "mae_mw": 2127.4825268817203,
+      "bias_mw": 1851.5282258064517,
+      "rmse_mw": 2606.0679164624726,
+      "pearson_r": 0.9282779618215823
+    },
+    "decision_same_hours": {
+      "n": 744,
+      "mae_mw": 2127.4825268817203,
+      "bias_mw": 1851.5282258064517,
+      "rmse_mw": 2606.0679164624726,
+      "pearson_r": 0.9282779618215823
+    },
+    "short_horizon_same_hours": {
+      "n": 744,
+      "mae_mw": 1794.22311827957,
+      "bias_mw": 1592.494623655914,
+      "rmse_mw": 2280.9003669320955,
+      "pearson_r": 0.9539770933957927
+    }
+  },
+  "bias_correction_illustration": {
+    "method": "Leave one delivery day out; subtract other days' mean error; illustrative, not for production",
+    "uncorrected": {
+      "n": 744,
+      "mae_mw": 2127.4825268817203,
+      "p90_shortfall_mw": 4306.4000000000015,
+      "p95_shortfall_mw": 5350.900000000001
+    },
+    "corrected": {
+      "n": 744,
+      "mae_mw": 1468.7562985364395,
+      "p90_shortfall_mw": 2482.549166666667,
+      "p95_shortfall_mw": 3594.4400000000005
+    }
+  },
+  "definitions": {
+    "fuelhh": {
+      "dataset_url": "https://bmrs.elexon.co.uk/api-documentation/endpoint/datasets/FUELHH/stream",
+      "context_url": "https://bmrs.elexon.co.uk/generation-by-fuel-type",
+      "context_quote": "The data comes from Operational Metering for BMUs connected to the transmission system",
+      "documented": "Operational Metering for BMUs connected to the transmission system; embedded generation and wind farms without operational meters are excluded."
+    },
+    "windfor": {
+      "dataset_url": "https://bmrs.elexon.co.uk/api-documentation/endpoint/datasets/WINDFOR/stream",
+      "context_url": "https://bmrs.elexon.co.uk/wind-generation",
+      "context_quote": "wind farms which are visible to the ESO and have operational metering",
+      "documented": "Forecasts wind farms visible to the ESO with operational metering."
+    },
+    "unclear": "The documentation does not provide a matched asset list or prove identical WINDFOR/FUELHH WIND scope for January 2026."
+  }
+}
