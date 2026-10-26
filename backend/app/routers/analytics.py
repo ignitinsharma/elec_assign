@@ -2,14 +2,17 @@
 
 from __future__ import annotations
 
+import json
 from datetime import date, timezone
+from functools import lru_cache
 from typing import Annotated
 
 import pandas as pd
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 
-from app.config import DECISION_CUTOFF_HOUR, TIMEZONE
+from app.config import DATA_DIR, DECISION_CUTOFF_HOUR, TIMEZONE
 from app.schemas.analytics import (
+    AccuracyPointsResponse,
     AccuracyResponse,
     BreakdownResponse,
     BreakdownsResponse,
@@ -23,6 +26,7 @@ from app.schemas.analytics import (
     VintageGroupResponse,
     VintageRowResponse,
 )
+from app.schemas.diagnostics import DiagnosticsResponse
 from app.services.forecast_selector import cutoff_for_day, delivery_days, select_vintages_for
 from app.services.metrics import (
     BreakdownRow,
@@ -81,6 +85,17 @@ def _decision_rows(frame: pd.DataFrame) -> list[DecisionRowResponse]:
         )
         for row in frame.itertuples(index=False)
     ]
+
+
+@lru_cache(maxsize=1)
+def get_diagnostics() -> DiagnosticsResponse:
+    """Validate and cache the committed report; never contact Elexon."""
+    return DiagnosticsResponse.model_validate(json.loads((DATA_DIR / "bias_diagnostics.json").read_text()))
+
+
+@router.get("/diagnostics", response_model=DiagnosticsResponse)
+def diagnostics(report: Annotated[DiagnosticsResponse, Depends(get_diagnostics)]) -> DiagnosticsResponse:
+    return report
 
 
 @router.get("/meta", response_model=MetaResponse)
@@ -206,4 +221,33 @@ def accuracy_horizon(snapshot: Annotated[Snapshot, Depends(get_snapshot)]) -> Ho
     return HorizonResponse(
         basis="All WINDFOR vintages with nonnegative horizon, joined to exact hourly FUELHH :00 actuals; separate from decision-time accuracy",
         buckets=_breakdown_response(all_vintages_horizon_analysis(snapshot.forecasts, snapshot.actuals)),
+    )
+
+
+@router.get("/accuracy/points", response_model=AccuracyPointsResponse)
+def accuracy_points(
+    snapshot: Annotated[Snapshot, Depends(get_snapshot)],
+    start: date | None = None,
+    end: date | None = None,
+    cutoff_hour: CutoffQuery = None,
+) -> AccuracyPointsResponse:
+    """Return bounded January hourly pairs for the forecast-vs-actual scatter."""
+    available = snapshot.available_days
+    first, last = start or available[0], end or available[-1]
+    if first > last:
+        raise HTTPException(status_code=422, detail="start must be on or before end")
+    _require_day(first, snapshot)
+    _require_day(last, snapshot)
+    hour = _cutoff(cutoff_hour)
+    frame = snapshot.joined(hour)
+    local_days = delivery_days(frame["startTime"])
+    rows = _decision_rows(frame.loc[(local_days >= first) & (local_days <= last)])
+    if not rows:
+        raise HTTPException(status_code=404, detail="No comparable forecasts are available in this range")
+    return AccuracyPointsResponse(
+        start=first,
+        end=last,
+        cutoff_hour=hour,
+        basis="Decision-time forecasts joined to exact hourly FUELHH :00 actuals",
+        rows=rows,
     )

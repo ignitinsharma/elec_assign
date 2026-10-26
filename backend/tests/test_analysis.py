@@ -123,6 +123,15 @@ def test_api_endpoints_and_input_errors(snapshot: Snapshot) -> None:
         assert horizon.status_code == 200
         assert sum(bucket["metrics"]["n"] for bucket in horizon.json()["buckets"]) == 8
 
+        points = client.get("/api/accuracy/points?start=2026-01-01&end=2026-01-02")
+        assert points.status_code == 200
+        assert len(points.json()["rows"]) == 3
+        assert points.json()["rows"][0]["error_mw"] == 10
+
+        diagnostics = client.get("/api/diagnostics")
+        assert diagnostics.status_code == 200
+        assert diagnostics.json()["bias_correction_illustration"]["corrected"]["n"] == 744
+
         for path, status in [
             ("/api/decision-forecast?date=bad", 422),
             ("/api/decision-forecast?date=2025-12-31", 404),
@@ -131,5 +140,7 @@ def test_api_endpoints_and_input_errors(snapshot: Snapshot) -> None:
             ("/api/accuracy?start=2026-01-02&end=2026-01-01", 422),
             ("/api/accuracy?start=2025-12-31", 404),
             ("/api/accuracy?cutoff_hour=-1", 422),
+            ("/api/accuracy/points?start=2026-02-01&end=2026-02-01", 404),
+            ("/api/accuracy/points?cutoff_hour=24", 422),
         ]:
             assert client.get(path).status_code == status

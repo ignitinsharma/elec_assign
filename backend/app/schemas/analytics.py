@@ -108,3 +108,11 @@ class AccuracyResponse(BaseModel):
 class HorizonResponse(BaseModel):
     basis: str
     buckets: list[BreakdownResponse]
+
+
+class AccuracyPointsResponse(BaseModel):
+    start: date
+    end: date
+    cutoff_hour: int
+    basis: str
+    rows: list[DecisionRowResponse]
