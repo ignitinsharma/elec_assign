@@ -5,6 +5,6 @@ __pycache__/
 .pytest_cache/
 frontend/node_modules/
 frontend/dist/
-data/*
-!data/.gitkeep
+data/raw/
+data/*.tmp
 .vercel/
