@@ -1,18 +1,16 @@
 import type { UseQueryResult } from '@tanstack/react-query'
+import { LoadingRegion } from './Skeleton'
 
 export function PageState({
   query,
   label,
+  kind = 'chart',
 }: {
   query: Pick<UseQueryResult, 'isPending' | 'isError' | 'error' | 'refetch'>
   label: string
+  kind?: 'decision' | 'revisions' | 'accuracy' | 'method' | 'chart' | 'card'
 }) {
-  if (query.isPending)
-    return (
-      <div className="state-panel" role="status">
-        Loading {label}…
-      </div>
-    )
+  if (query.isPending) return <LoadingRegion kind={kind} />
   if (query.isError)
     return (
       <div className="state-panel error" role="alert">

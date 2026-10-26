@@ -1,4 +1,4 @@
-import { StrictMode, Suspense, lazy } from 'react'
+import { StrictMode, lazy } from 'react'
 import { createRoot } from 'react-dom/client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
@@ -35,22 +35,14 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <Suspense
-          fallback={
-            <div className="state-panel" role="status">
-              Loading view…
-            </div>
-          }
-        >
-          <Routes>
-            <Route element={<Layout />}>
-              <Route index element={<DecisionDesk />} />
-              <Route path="revisions" element={<ForecastRevisions />} />
-              <Route path="accuracy" element={<ForecastAccuracy />} />
-              <Route path="method" element={<MethodPage />} />
-            </Route>
-          </Routes>
-        </Suspense>
+        <Routes>
+          <Route element={<Layout />}>
+            <Route index element={<DecisionDesk />} />
+            <Route path="revisions" element={<ForecastRevisions />} />
+            <Route path="accuracy" element={<ForecastAccuracy />} />
+            <Route path="method" element={<MethodPage />} />
+          </Route>
+        </Routes>
       </BrowserRouter>
     </QueryClientProvider>
   </StrictMode>,

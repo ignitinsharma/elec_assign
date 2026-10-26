@@ -6,12 +6,14 @@ import {
   formatMw,
   formatMwh,
   formatPercent,
+  londonZoneLabel,
   peakShortfall,
   SIGN_CONVENTION,
 } from './format'
 
 const response: DecisionResponse = {
   date: '2026-01-01',
+  decision_date: '2025-12-31',
   cutoff_hour: 9,
   cutoff_london: '2025-12-31T09:00:00Z',
   cutoff_london_label: '2025-12-31 09:00 GMT',
@@ -54,6 +56,9 @@ describe('display formatting and decision interpretation', () => {
     expect(formatPercent(0.1837)).toBe('18.4%')
     expect(formatLondon('2026-07-01T08:00:00Z')).toContain('BST')
     expect(formatLondon('2026-01-01T08:00:00Z')).toContain('GMT')
+    expect(londonZoneLabel('2026-01-15T12:00:00Z')).toBe('GMT')
+    expect(londonZoneLabel('2026-07-15T12:00:00Z')).toBe('BST')
+    expect(formatLondon('2026-01-15T12:00:00Z')).not.toContain('GMT+0')
   })
 
   it('states the cutoff, selected vintage and horizon from response rows', () => {

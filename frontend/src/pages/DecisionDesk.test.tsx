@@ -1,12 +1,14 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, expect, it, vi } from 'vitest'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { DecisionDesk } from './DecisionDesk'
 import { decisionBanner } from '../utils/format'
 import type { DecisionResponse } from '../types/analytics'
 
 const fixture: DecisionResponse = {
   date: '2026-01-01',
+  decision_date: '2025-12-31',
   cutoff_hour: 9,
   cutoff_london: '2025-12-31T09:00:00Z',
   cutoff_london_label: '2025-12-31 09:00 GMT',
@@ -35,7 +37,13 @@ const fixture: DecisionResponse = {
 
 vi.mock('../hooks/useDashboard', () => ({
   useDashboard: () => ({
-    meta: { available_delivery_dates: ['2026-01-01'], cutoff_hour_default: 9 },
+    meta: {
+      available_delivery_dates: ['2026-01-01'],
+      available_delivery_decisions: [
+        { delivery_date: '2026-01-01', decision_date: '2025-12-31' },
+      ],
+      cutoff_hour_default: 9,
+    },
     day: '2026-01-01',
     setDay: vi.fn(),
     cutoff: 9,
@@ -54,7 +62,11 @@ beforeEach(() => {
 })
 
 it('renders API-backed KPIs, sign convention, banner and hourly table', async () => {
-  render(<DecisionDesk />)
+  render(
+    <QueryClientProvider client={new QueryClient()}>
+      <DecisionDesk />
+    </QueryClientProvider>,
+  )
   expect(screen.getByText(decisionBanner(fixture))).toBeInTheDocument()
   expect(
     screen.getByText(

@@ -1,5 +1,11 @@
 export interface MetaResponse {
   available_delivery_dates: string[]
+  available_delivery_decisions: {
+    delivery_date: string
+    decision_date: string
+  }[]
+  accuracy_default_start: string
+  accuracy_default_end: string
   cutoff_hour_default: number
   timezone: string
   snapshot_metadata: Record<string, unknown>
@@ -17,6 +23,7 @@ export interface DecisionRow {
 
 export interface DecisionResponse {
   date: string
+  decision_date: string
   cutoff_hour: number
   cutoff_london: string
   cutoff_london_label: string
@@ -36,6 +43,7 @@ export interface DecisionResponse {
 
 export interface VintageResponse {
   date: string
+  decision_date: string
   cutoff_hour: number
   cutoff_london: string
   cutoff_london_label: string
