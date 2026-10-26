@@ -9,13 +9,14 @@ Backend foundation for a UK power trading tool that shows the national wind fore
 - `backend/app/main.py`: FastAPI application, lifespan snapshot loading, and `/api/health`.
 - `backend/app/config.py`: decision time, timezone, and data paths.
 - `backend/app/services/`: typed snapshot loading, local-time forecast selection, exact-time joins, and pure accuracy metrics.
-- `backend/app/routers/analytics.py`: read-only analysis endpoints under `/api`.
+- `backend/app/routers/analytics.py`: read-only analysis endpoints under `/api`, including hourly scatter points and the committed bias diagnostics.
 - `backend/app/schemas/`: Pydantic response models.
 - `backend/scripts/fetch_data.py`: chunked BMRS fetcher, retry logic, CSV writer, and validation report.
 - `backend/scripts/sanity_check.py`: reproducible real-snapshot coverage and sensitivity checks.
 - `backend/scripts/bias_diagnostics.py`: snapshot-only alignment, bias, horizon, and illustrative correction analysis.
 - `backend/tests/`: offline selection, metrics, API, fetch, and health tests.
-- `frontend/src/`: React app, with folders reserved for components, pages, API calls, hooks, types, and styles.
+- `frontend/src/pages/`: Decision Desk, Forecast Revisions, Forecast Accuracy, and Method & limits.
+- `frontend/src/components/`, `api/`, `hooks/`, `types/`, `utils/`, `styles/`: reusable charts and controls, typed API access, cached queries, contracts, display formatting, and responsive styles.
 - `api/index.py`: Vercel Python entrypoint.
 - `data/`: committed January 2026 gzip CSVs, provenance, validation, and bias-diagnostic reports; raw responses are ignored.
 
@@ -40,7 +41,7 @@ PYTHONPATH=backend .venv/bin/uvicorn app.main:app --reload --port 8000
 (cd frontend && npm ci && npm run dev)
 # checks from the repo root
 .venv/bin/pytest
-(cd frontend && npm run lint && npm run build)
+(cd frontend && npm run test && npm run lint && npm run build)
 # refresh the committed snapshot only when needed
 .venv/bin/python backend/scripts/fetch_data.py --help
 .venv/bin/python backend/scripts/fetch_data.py
@@ -96,6 +97,12 @@ Elexon's [FUELHH dataset documentation](https://bmrs.elexon.co.uk/api-documentat
 | `GET /api/accuracy/horizon` | Separate all-vintages lead-time analysis |
 
 Date ranges default to the full January snapshot. Invalid dates or cutoff hours return 422; dates outside the snapshot return 404.
+
+The dashboard uses Recharts and TanStack Query. The date and cutoff controls send each selection to the API; `/api/accuracy/points` supplies the exact hourly pairs for the scatter plot. `/api/diagnostics` validates and serves the committed `bias_diagnostics.json`; its leave-one-day-out illustration is always labelled as a retrospective January analysis, regardless of the selected accuracy date range. The React build uses same-origin `/api` paths in Docker and on Vercel.
+
+### Screenshots
+
+With the app running and Playwright Chromium installed, run `cd frontend && npm run screenshots` to capture all four views at desktop and mobile widths in the ignored `screenshots/` directory. Add representative screenshots here when sharing the deployed app.
 
 ## 7. AI tools used
 
