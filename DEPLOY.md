@@ -34,7 +34,7 @@ In Vercel, choose **Add New → Project → Import Git Repository**, select this
 | Python | 3.12, pinned by `.python-version` |
 | Required environment variables | None |
 
-Keep `DATA_DIR` unset so the app resolves the bundled repository `data/` directory. The existing defaults are `DECISION_CUTOFF_HOUR=9` and `TIMEZONE=Europe/London`; changing them changes the app's defaults. `vercel.json` routes `/api/*` to the Python function and rewrites other paths to the React `index.html` for client-side navigation. The function configuration explicitly bundles `backend/app/`, the gzip CSVs, `metadata.json`, and `bias_diagnostics.json` while excluding development files.
+Keep `DATA_DIR` unset so the app resolves the bundled repository `data/` directory. The existing defaults are `DECISION_CUTOFF_HOUR=9` and `TIMEZONE=Europe/London`; changing them changes the app's defaults. `pyproject.toml` and `uv.lock` keep the Python function on 3.12 with locked dependencies. `vercel.json` routes `/api/*` to the Python function and rewrites other paths to the React `index.html` for client-side navigation. The function configuration explicitly bundles `backend/app/`, the gzip CSVs, `metadata.json`, and `bias_diagnostics.json` while excluding development files.
 
 ## Verification after deployment
 

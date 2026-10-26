@@ -18,7 +18,7 @@ UK power trading dashboard showing the national wind forecast available at the d
 - `frontend/src/pages/`: Decision Desk, Forecast Revisions, Forecast Accuracy, and Method & limits.
 - `frontend/src/components/`, `api/`, `hooks/`, `types/`, `utils/`, `styles/`: reusable charts, skeletons and controls; typed API access, cached queries, MW axis and time formatting, and responsive styles.
 - `api/index.py`: Vercel Python entrypoint.
-- `vercel.json` and root `requirements.txt`: static-build routing and pinned Python function dependencies.
+- `vercel.json`, root `requirements.txt`, `pyproject.toml`, and `uv.lock`: static-build routing and Python 3.12 function dependencies.
 - `DEPLOY.md`: one-project Vercel deployment and verification steps.
 - `scripts/smoke_test.py`: deployed HTML and snapshot API checks.
 - `data/`: committed 1 Jan–1 Feb 2026 delivery gzip CSVs, provenance, validation, and bias-diagnostic reports; raw responses are ignored.
@@ -65,7 +65,7 @@ See [DEPLOY.md](DEPLOY.md) for the CLI and GitHub import steps, project settings
 - Decision cutoff is 09:00 `Europe/London` on the day before delivery by default. API callers may override the hour from 0 through 23.
 - National-level wind only; generation values are MW. CSV timestamps are UTC; trading cutoffs use `Europe/London`.
 - The root `DESIGN.md`, `CLAUDE.md`, and `AGENTS.md` describe an unrelated project. This dashboard follows the supplied design brief.
-- `api/index.py` adds `backend/` to Python's import path so the same FastAPI app runs locally and on Vercel. The root `requirements.txt` pins only the production FastAPI and pandas dependencies for Vercel; `backend/requirements.txt` also includes local development and test tools.
+- `api/index.py` adds `backend/` to Python's import path so the same FastAPI app runs locally and on Vercel. The root `requirements.txt` and Python 3.12 `pyproject.toml`/`uv.lock` pin the production FastAPI and pandas dependencies; `backend/requirements.txt` also includes local development and test tools.
 
 ## 6. Data and methodology
 
