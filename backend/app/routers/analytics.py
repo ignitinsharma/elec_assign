@@ -1,9 +1,9 @@
-"""Read-only API over the committed January 2026 wind snapshot."""
+"""Read-only API over the committed wind snapshot."""
 
 from __future__ import annotations
 
 import json
-from datetime import date, timezone
+from datetime import date, timedelta, timezone
 from functools import lru_cache
 from typing import Annotated
 
@@ -18,6 +18,7 @@ from app.schemas.analytics import (
     BreakdownsResponse,
     DaySummaryResponse,
     DecisionForecastResponse,
+    DeliveryDecisionResponse,
     DecisionRowResponse,
     ForecastVintagesResponse,
     HorizonResponse,
@@ -53,7 +54,17 @@ def _cutoff(value: int | None) -> int:
 
 def _require_day(day: date, snapshot: Snapshot) -> None:
     if day not in snapshot.available_days:
-        raise HTTPException(status_code=404, detail="Delivery date is outside the January 2026 snapshot")
+        raise HTTPException(status_code=404, detail="Delivery date is outside the available snapshot")
+
+
+def _default_accuracy_dates(snapshot: Snapshot) -> tuple[date, date]:
+    """Default to delivery days whose day-ahead decisions fell in January 2026."""
+    january_decisions = [
+        day for day in snapshot.available_days
+        if date(2026, 1, 1) <= day - timedelta(days=1) <= date(2026, 1, 31)
+    ]
+    days = january_decisions or snapshot.available_days
+    return days[0], days[-1]
 
 
 def _day_frame(frame: pd.DataFrame, day: date) -> pd.DataFrame:
@@ -100,8 +111,15 @@ def diagnostics(report: Annotated[DiagnosticsResponse, Depends(get_diagnostics)]
 
 @router.get("/meta", response_model=MetaResponse)
 def meta(snapshot: Annotated[Snapshot, Depends(get_snapshot)]) -> MetaResponse:
+    default_start, default_end = _default_accuracy_dates(snapshot)
     return MetaResponse(
         available_delivery_dates=snapshot.available_days,
+        available_delivery_decisions=[
+            DeliveryDecisionResponse(delivery_date=day, decision_date=day - timedelta(days=1))
+            for day in snapshot.available_days
+        ],
+        accuracy_default_start=default_start,
+        accuracy_default_end=default_end,
         cutoff_hour_default=DECISION_CUTOFF_HOUR,
         timezone=TIMEZONE,
         snapshot_metadata=snapshot.metadata,
@@ -130,6 +148,7 @@ def decision_forecast(
     day_metrics = compute_metrics(frame)
     return DecisionForecastResponse(
         date=date,
+        decision_date=date - timedelta(days=1),
         cutoff_hour=hour,
         cutoff_london=cutoff_london,
         cutoff_london_label=cutoff_london.strftime("%Y-%m-%d %H:%M %Z"),
@@ -170,6 +189,7 @@ def forecast_vintages(
     selected = _day_frame(snapshot.joined(hour), date)
     return ForecastVintagesResponse(
         date=date,
+        decision_date=date - timedelta(days=1),
         cutoff_hour=hour,
         cutoff_london=cutoff_london,
         cutoff_london_label=cutoff_london.strftime("%Y-%m-%d %H:%M %Z"),
@@ -186,9 +206,9 @@ def accuracy(
     end: date | None = None,
     cutoff_hour: CutoffQuery = None,
 ) -> AccuracyResponse:
-    available = snapshot.available_days
-    first = start or available[0]
-    last = end or available[-1]
+    default_start, default_end = _default_accuracy_dates(snapshot)
+    first = start or default_start
+    last = end or default_end
     if first > last:
         raise HTTPException(status_code=422, detail="start must be on or before end")
     _require_day(first, snapshot)
@@ -231,9 +251,9 @@ def accuracy_points(
     end: date | None = None,
     cutoff_hour: CutoffQuery = None,
 ) -> AccuracyPointsResponse:
-    """Return bounded January hourly pairs for the forecast-vs-actual scatter."""
-    available = snapshot.available_days
-    first, last = start or available[0], end or available[-1]
+    """Return bounded hourly pairs for the forecast-vs-actual scatter."""
+    default_start, default_end = _default_accuracy_dates(snapshot)
+    first, last = start or default_start, end or default_end
     if first > last:
         raise HTTPException(status_code=422, detail="start must be on or before end")
     _require_day(first, snapshot)

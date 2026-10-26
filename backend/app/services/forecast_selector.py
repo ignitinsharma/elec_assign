@@ -68,5 +68,5 @@ def select_vintages_for(forecasts: pd.DataFrame, day: date, cutoff_hour: int) ->
 
 
 def select_vintages(day: date, cutoff_hour: int) -> pd.DataFrame:
-    """Return cutoff-eligible vintages from the committed January snapshot."""
+    """Return cutoff-eligible vintages from the committed snapshot."""
     return select_vintages_for(load_forecasts(), day, cutoff_hour)

@@ -37,8 +37,16 @@ class BreakdownsResponse(BaseModel):
     wind_band_thresholds_mw: list[float]
 
 
+class DeliveryDecisionResponse(BaseModel):
+    delivery_date: date
+    decision_date: date
+
+
 class MetaResponse(BaseModel):
     available_delivery_dates: list[date]
+    available_delivery_decisions: list[DeliveryDecisionResponse]
+    accuracy_default_start: date
+    accuracy_default_end: date
     cutoff_hour_default: int
     timezone: str
     snapshot_metadata: dict[str, Any]
@@ -67,6 +75,7 @@ class DaySummaryResponse(BaseModel):
 
 class DecisionForecastResponse(BaseModel):
     date: date
+    decision_date: date
     cutoff_hour: int
     cutoff_london: datetime
     cutoff_london_label: str
@@ -88,6 +97,7 @@ class VintageGroupResponse(BaseModel):
 
 class ForecastVintagesResponse(BaseModel):
     date: date
+    decision_date: date
     cutoff_hour: int
     cutoff_london: datetime
     cutoff_london_label: str

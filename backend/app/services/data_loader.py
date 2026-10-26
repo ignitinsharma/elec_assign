@@ -98,11 +98,11 @@ def _read_forecasts(path: str) -> pd.DataFrame:
 
 def load_actuals(path: Path | None = None) -> pd.DataFrame:
     """Return a typed copy of the cached actuals snapshot."""
-    source = path or DATA_DIR / "actuals_wind_2026-01.csv.gz"
+    source = path or DATA_DIR / "actuals_wind_2026-01-01_2026-02-01.csv.gz"
     return _read_actuals(str(source.resolve())).copy(deep=True)
 
 
 def load_forecasts(path: Path | None = None) -> pd.DataFrame:
     """Return a typed copy of the cached forecast snapshot."""
-    source = path or DATA_DIR / "forecasts_wind_2026-01.csv.gz"
+    source = path or DATA_DIR / "forecasts_wind_2026-01-01_2026-02-01.csv.gz"
     return _read_forecasts(str(source.resolve())).copy(deep=True)

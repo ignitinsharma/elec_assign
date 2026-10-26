@@ -33,8 +33,8 @@ def _hourly_average_actuals(actuals: pd.DataFrame) -> pd.DataFrame:
 def run_checks() -> dict[str, Any]:
     snapshot = load_snapshot()
     days: list[date] = snapshot.available_days
-    if days != list(pd.date_range("2026-01-01", "2026-01-31").date):
-        raise AssertionError("Snapshot must cover every January 2026 delivery day")
+    if days != list(pd.date_range("2026-01-01", "2026-02-01").date):
+        raise AssertionError("Snapshot must cover January 1 through February 1 delivery days")
     selected = snapshot.selected(9)
     assert (selected["publishTime"] <= selected["cutoff_time"]).all(), "A selected forecast was published after cutoff"
     assert selected["horizon_hours"].ge(0).all(), "A selected forecast has negative horizon"
@@ -60,6 +60,9 @@ def run_checks() -> dict[str, Any]:
 
     baseline = snapshot.joined(9)
     baseline_days = delivery_days(baseline["startTime"])
+    january_decisions = baseline.loc[
+        (baseline_days >= date(2026, 1, 2)) & (baseline_days <= date(2026, 2, 1))
+    ]
     daily = [
         {"delivery_day": day.isoformat(), **compute_metrics(baseline.loc[baseline_days == day])}
         for day in days
@@ -78,6 +81,7 @@ def run_checks() -> dict[str, Any]:
             "publishTime_range_utc": {"min": _timestamp(selected["publishTime"].min()), "max": _timestamp(selected["publishTime"].max())},
         },
         "baseline_cutoff_9": compute_metrics(baseline),
+        "january_decisions_cutoff_9": compute_metrics(january_decisions),
         "sensitivity": sensitivity,
         "worst_three_days_mae": sorted(daily, key=lambda row: row["mae_mw"], reverse=True)[:3],
         "best_three_days_mae": sorted(daily, key=lambda row: row["mae_mw"])[:3],

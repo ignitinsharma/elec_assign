@@ -1,4 +1,4 @@
-"""In-memory January snapshot and per-cutoff selection cache."""
+"""In-memory committed snapshot and per-cutoff selection cache."""
 
 from __future__ import annotations
 

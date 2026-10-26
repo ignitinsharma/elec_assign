@@ -11,7 +11,7 @@ from app.main import create_app
 from app.services.data_loader import clean_actuals, clean_forecasts
 from app.services.forecast_selector import cutoff_for_day, select_decision_forecast, select_vintages_for
 from app.services.metrics import compute_metrics, join_decision_actuals
-from app.services.snapshot import Snapshot
+from app.services.snapshot import Snapshot, load_snapshot
 
 
 def _forecast(start: str, published: str, generation: int) -> dict:
@@ -102,17 +102,22 @@ def test_api_endpoints_and_input_errors(snapshot: Snapshot) -> None:
         meta = client.get("/api/meta")
         assert meta.status_code == 200
         assert meta.json()["available_delivery_dates"] == ["2026-01-01", "2026-01-02"]
+        assert meta.json()["available_delivery_decisions"][0] == {"delivery_date": "2026-01-01", "decision_date": "2025-12-31"}
+        assert meta.json()["accuracy_default_start"] == "2026-01-02"
+        assert meta.json()["accuracy_default_end"] == "2026-01-02"
 
         decision = client.get("/api/decision-forecast?date=2026-01-01")
         assert decision.status_code == 200
         assert len(decision.json()["rows"]) == 2
         assert decision.json()["rows"][0]["error_mw"] == 10
         assert decision.json()["summary"]["total_forecast_mwh"] == 215
+        assert decision.json()["decision_date"] == "2025-12-31"
 
         vintages = client.get("/api/forecast-vintages?date=2026-01-01")
         assert vintages.status_code == 200
         assert len(vintages.json()["vintages"]) == 2
         assert len(vintages.json()["selected_rows"]) == 2
+        assert vintages.json()["decision_date"] == "2025-12-31"
 
         accuracy = client.get("/api/accuracy?start=2026-01-01&end=2026-01-02")
         assert accuracy.status_code == 200
@@ -130,7 +135,7 @@ def test_api_endpoints_and_input_errors(snapshot: Snapshot) -> None:
 
         diagnostics = client.get("/api/diagnostics")
         assert diagnostics.status_code == 200
-        assert diagnostics.json()["bias_correction_illustration"]["corrected"]["n"] == 744
+        assert diagnostics.json()["bias_correction_illustration"]["corrected"]["n"] == 768
 
         for path, status in [
             ("/api/decision-forecast?date=bad", 422),
@@ -144,3 +149,26 @@ def test_api_endpoints_and_input_errors(snapshot: Snapshot) -> None:
             ("/api/accuracy/points?cutoff_hour=24", 422),
         ]:
             assert client.get(path).status_code == status
+
+
+def test_committed_snapshot_includes_last_january_decision() -> None:
+    snapshot = load_snapshot()
+    assert snapshot.available_days[0] == date(2026, 1, 1)
+    assert snapshot.available_days[-1] == date(2026, 2, 1)
+    assert len(snapshot.available_days) == 32
+    february_first = snapshot.joined(9).loc[
+        snapshot.joined(9)["startTime"].dt.date == date(2026, 2, 1)
+    ]
+    assert len(february_first) == 24
+    assert (february_first["publishTime"] <= february_first["cutoff_time"]).all()
+    with TestClient(create_app(snapshot)) as client:
+        meta = client.get("/api/meta").json()
+        assert meta["accuracy_default_start"] == "2026-01-02"
+        assert meta["accuracy_default_end"] == "2026-02-01"
+        default_accuracy = client.get("/api/accuracy").json()
+        assert default_accuracy["start"] == "2026-01-02"
+        assert default_accuracy["end"] == "2026-02-01"
+        assert default_accuracy["overall"]["n"] == 31 * 24
+        response = client.get("/api/decision-forecast?date=2026-02-01")
+        assert response.status_code == 200
+        assert response.json()["decision_date"] == "2026-01-31"

@@ -1,4 +1,4 @@
-"""Diagnose January wind forecast bias using only the committed BMRS snapshot.
+"""Diagnose wind forecast bias using only the committed BMRS snapshot.
 
 Shifts compare a forecast for UTC time t with the actual at t + shift. The
 baseline uses exact hourly :00 actuals; half-hour shifts use observed FUELHH
@@ -152,7 +152,7 @@ def run_analysis(snapshot: Snapshot) -> dict[str, Any]:
     corrected_metrics = compute_metrics(corrected)
     return {
         "analysed_at_utc": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
-        "basis": "January 2026; cutoff 09:00 Europe/London on D-1; error = forecast - actual MW; exact hourly :00 actuals",
+        "basis": "Delivery 2026-01-01 to 2026-02-01; cutoff 09:00 Europe/London on D-1; error = forecast - actual MW; exact hourly :00 actuals",
         "time_alignment": {
             "shift_definition": "forecast at t compared with actual at t + shift; no interpolation",
             "rows": shifts,
@@ -190,7 +190,7 @@ def run_analysis(snapshot: Snapshot) -> dict[str, Any]:
                 "context_quote": "wind farms which are visible to the ESO and have operational metering",
                 "documented": "Forecasts wind farms visible to the ESO with operational metering.",
             },
-            "unclear": "The documentation does not provide a matched asset list or prove identical WINDFOR/FUELHH WIND scope for January 2026.",
+            "unclear": "The documentation does not provide a matched asset list or prove identical WINDFOR/FUELHH WIND scope for this snapshot.",
         },
     }
 

@@ -177,7 +177,7 @@ def fetch_snapshot(start: date, end: date, output_dir: Path, forecast_publish_st
     actuals = actuals.loc[(actuals["startTime"] >= delivery_start) & (actuals["startTime"] < delivery_end)].copy()
     forecasts = forecasts.loc[(forecasts["startTime"] >= delivery_start) & (forecasts["startTime"] < delivery_end)].copy()
     if actuals.empty or forecasts.empty:
-        raise ValueError("No January delivery rows remain after filtering")
+        raise ValueError("No delivery rows remain after filtering")
     report = validation_report(actuals, forecasts, start, end, actual_duplicates, forecast_duplicates)
     output_dir.mkdir(parents=True, exist_ok=True)
     full_month = (start.year, start.month) == (end.year, end.month) and start.day == 1 and end.day == calendar.monthrange(end.year, end.month)[1]
@@ -212,7 +212,7 @@ def fetch_snapshot(start: date, end: date, output_dir: Path, forecast_publish_st
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--start-date", type=date.fromisoformat, default=date(2026, 1, 1), help="First UTC delivery date")
-    parser.add_argument("--end-date", type=date.fromisoformat, default=date(2026, 1, 31), help="Last UTC delivery date")
+    parser.add_argument("--end-date", type=date.fromisoformat, default=date(2026, 2, 1), help="Last UTC delivery date")
     parser.add_argument("--output-dir", type=Path, default=DATA_DIR, help="Snapshot directory")
     parser.add_argument("--forecast-publish-start", type=date.fromisoformat, help="UTC publication start; defaults to 17 days before start")
     args = parser.parse_args()

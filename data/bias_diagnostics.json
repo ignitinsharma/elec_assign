@@ -1,111 +1,111 @@
 {
-  "analysed_at_utc": "2026-10-26T05:04:56.218421Z",
-  "basis": "January 2026; cutoff 09:00 Europe/London on D-1; error = forecast - actual MW; exact hourly :00 actuals",
+  "analysed_at_utc": "2026-10-26T05:44:40.989215Z",
+  "basis": "Delivery 2026-01-01 to 2026-02-01; cutoff 09:00 Europe/London on D-1; error = forecast - actual MW; exact hourly :00 actuals",
   "time_alignment": {
     "shift_definition": "forecast at t compared with actual at t + shift; no interpolation",
     "rows": [
       {
         "shift_minutes": -180,
-        "n": 741,
-        "mae_mw": 2130.9082321187584,
-        "bias_mw": 1817.3373819163294,
-        "rmse_mw": 2690.0287455382077,
-        "pearson_r": 0.9137316268581906
+        "n": 765,
+        "mae_mw": 2080.4823529411765,
+        "bias_mw": 1772.7411764705882,
+        "rmse_mw": 2650.073768611917,
+        "pearson_r": 0.9174536945963416
       },
       {
         "shift_minutes": -120,
-        "n": 742,
-        "mae_mw": 2077.8625336927225,
-        "bias_mw": 1828.989218328841,
-        "rmse_mw": 2619.9849802042677,
-        "pearson_r": 0.9241569847494272
+        "n": 766,
+        "mae_mw": 2032.0678851174935,
+        "bias_mw": 1790.0809399477807,
+        "rmse_mw": 2581.9425282761713,
+        "pearson_r": 0.9276786530979343
       },
       {
         "shift_minutes": -60,
-        "n": 743,
-        "mae_mw": 2078.3324360699867,
-        "bias_mw": 1840.1816958277254,
-        "rmse_mw": 2592.616744030372,
-        "pearson_r": 0.9288597859589295
+        "n": 767,
+        "mae_mw": 2037.8096479791395,
+        "bias_mw": 1807.1108213820078,
+        "rmse_mw": 2556.443983022347,
+        "pearson_r": 0.9323938932416563
       },
       {
         "shift_minutes": -30,
-        "n": 743,
-        "mae_mw": 2094.415881561238,
-        "bias_mw": 1840.5558546433379,
-        "rmse_mw": 2591.748140533129,
-        "pearson_r": 0.9289418664667614
+        "n": 767,
+        "mae_mw": 2056.0547588005215,
+        "bias_mw": 1810.1329856584093,
+        "rmse_mw": 2556.3937283591004,
+        "pearson_r": 0.9325530593362664
       },
       {
         "shift_minutes": 0,
-        "n": 744,
-        "mae_mw": 2127.4825268817203,
-        "bias_mw": 1851.5282258064517,
-        "rmse_mw": 2606.0679164624726,
-        "pearson_r": 0.9282779618215823
+        "n": 768,
+        "mae_mw": 2091.2447916666665,
+        "bias_mw": 1823.3541666666667,
+        "rmse_mw": 2571.5291018915186,
+        "pearson_r": 0.9319769194913777
       },
       {
         "shift_minutes": 30,
-        "n": 744,
-        "mae_mw": 2162.8494623655915,
-        "bias_mw": 1852.279569892473,
-        "rmse_mw": 2625.5200816075912,
-        "pearson_r": 0.9257521454762786
+        "n": 768,
+        "mae_mw": 2128.0208333333335,
+        "bias_mw": 1826.1484375,
+        "rmse_mw": 2591.585651198895,
+        "pearson_r": 0.9296078857591543
       },
       {
         "shift_minutes": 60,
-        "n": 743,
-        "mae_mw": 2196.1534320323017,
-        "bias_mw": 1858.1776581426648,
-        "rmse_mw": 2654.548941111032,
-        "pearson_r": 0.9226306596786106
+        "n": 767,
+        "mae_mw": 2164.658409387223,
+        "bias_mw": 1837.25814863103,
+        "rmse_mw": 2622.1644669100037,
+        "pearson_r": 0.9265020100279289
       },
       {
         "shift_minutes": 120,
-        "n": 742,
-        "mae_mw": 2274.8032345013476,
-        "bias_mw": 1865.1132075471698,
-        "rmse_mw": 2740.642510793346,
-        "pearson_r": 0.9118326011693192
+        "n": 766,
+        "mae_mw": 2248.0117493472585,
+        "bias_mw": 1851.1579634464752,
+        "rmse_mw": 2710.301120871322,
+        "pearson_r": 0.9160303971155719
       },
       {
         "shift_minutes": 180,
-        "n": 741,
-        "mae_mw": 2361.8744939271255,
-        "bias_mw": 1872.1336032388665,
-        "rmse_mw": 2859.429671671165,
-        "pearson_r": 0.8960943420285722
+        "n": 765,
+        "mae_mw": 2339.4104575163396,
+        "bias_mw": 1865.0339869281045,
+        "rmse_mw": 2830.798059025121,
+        "pearson_r": 0.9007629141721711
       }
     ],
     "best_mae_shift_minutes": -120,
-    "best_mae_reduction_percent": 2.3323337588923225
+    "best_mae_reduction_percent": 2.829745555612867
   },
   "bias_structure": {
     "ols_actual_on_forecast": {
-      "intercept_mw": 891.2492434856447,
-      "slope": 0.7958124956257429,
-      "r_squared": 0.8616999744036314,
-      "median_forecast_actual_ratio": 1.1582943169555744
+      "intercept_mw": 833.9881154831627,
+      "slope": 0.7992348213633114,
+      "r_squared": 0.868580978464637,
+      "median_forecast_actual_ratio": 1.160110739266071
     },
     "wind_tercile_thresholds_mw": [
-      9365.66666666666,
-      14657.999999999998
+      8972.999999999998,
+      14594.666666666666
     ],
     "by_wind_level": [
       {
         "band": "low",
-        "n": 248,
-        "bias_mw": 1480.483870967742
+        "n": 256,
+        "bias_mw": 1461.71484375
       },
       {
         "band": "medium",
-        "n": 248,
-        "bias_mw": 1692.375
+        "n": 256,
+        "bias_mw": 1633.23828125
       },
       {
         "band": "high",
-        "n": 248,
-        "bias_mw": 2381.7258064516127
+        "n": 256,
+        "bias_mw": 2375.109375
       }
     ],
     "by_delivery_day": [
@@ -263,53 +263,58 @@
         "delivery_day": "2026-01-31",
         "n": 24,
         "bias_mw": 2315.0833333333335
+      },
+      {
+        "delivery_day": "2026-02-01",
+        "n": 24,
+        "bias_mw": 949.9583333333334
       }
     ],
     "positive_day_run": {
-      "positive_days": 27,
-      "positive_days_percent": 87.09677419354838,
-      "longest_run_days": 12,
+      "positive_days": 28,
+      "positive_days_percent": 87.5,
+      "longest_run_days": 13,
       "longest_run_start": "2026-01-20",
-      "longest_run_end": "2026-01-31"
+      "longest_run_end": "2026-02-01"
     }
   },
   "horizon_check": {
     "window": "0 <= horizon_hours <= 6; latest eligible vintage per startTime",
     "decision_full": {
-      "n": 744,
-      "mae_mw": 2127.4825268817203,
-      "bias_mw": 1851.5282258064517,
-      "rmse_mw": 2606.0679164624726,
-      "pearson_r": 0.9282779618215823
+      "n": 768,
+      "mae_mw": 2091.2447916666665,
+      "bias_mw": 1823.3541666666667,
+      "rmse_mw": 2571.5291018915186,
+      "pearson_r": 0.9319769194913777
     },
     "decision_same_hours": {
-      "n": 744,
-      "mae_mw": 2127.4825268817203,
-      "bias_mw": 1851.5282258064517,
-      "rmse_mw": 2606.0679164624726,
-      "pearson_r": 0.9282779618215823
+      "n": 768,
+      "mae_mw": 2091.2447916666665,
+      "bias_mw": 1823.3541666666667,
+      "rmse_mw": 2571.5291018915186,
+      "pearson_r": 0.9319769194913777
     },
     "short_horizon_same_hours": {
-      "n": 744,
-      "mae_mw": 1794.22311827957,
-      "bias_mw": 1592.494623655914,
-      "rmse_mw": 2280.9003669320955,
-      "pearson_r": 0.9539770933957927
+      "n": 768,
+      "mae_mw": 1766.0716145833333,
+      "bias_mw": 1563.8736979166667,
+      "rmse_mw": 2253.1264369505357,
+      "pearson_r": 0.956153090921767
     }
   },
   "bias_correction_illustration": {
     "method": "Leave one delivery day out; subtract other days' mean error; illustrative, not for production",
     "uncorrected": {
-      "n": 744,
-      "mae_mw": 2127.4825268817203,
-      "p90_shortfall_mw": 4306.4000000000015,
-      "p95_shortfall_mw": 5350.900000000001
+      "n": 768,
+      "mae_mw": 2091.2447916666665,
+      "p90_shortfall_mw": 4250.8,
+      "p95_shortfall_mw": 5333.049999999999
     },
     "corrected": {
-      "n": 744,
-      "mae_mw": 1468.7562985364395,
-      "p90_shortfall_mw": 2482.549166666667,
-      "p95_shortfall_mw": 3594.4400000000005
+      "n": 768,
+      "mae_mw": 1448.0692834341396,
+      "p90_shortfall_mw": 2489.8030913978487,
+      "p95_shortfall_mw": 3613.2700940860204
     }
   },
   "definitions": {
@@ -325,6 +330,6 @@
       "context_quote": "wind farms which are visible to the ESO and have operational metering",
       "documented": "Forecasts wind farms visible to the ESO with operational metering."
     },
-    "unclear": "The documentation does not provide a matched asset list or prove identical WINDFOR/FUELHH WIND scope for January 2026."
+    "unclear": "The documentation does not provide a matched asset list or prove identical WINDFOR/FUELHH WIND scope for this snapshot."
   }
 }

@@ -1,5 +1,5 @@
 {
-  "fetched_at": "2026-10-26T04:40:06Z",
+  "fetched_at": "2026-10-26T05:44:32Z",
   "source_urls": {
     "actuals": "https://data.elexon.co.uk/bmrs/api/v1/datasets/FUELHH/stream",
     "forecasts": "https://data.elexon.co.uk/bmrs/api/v1/datasets/WINDFOR/stream"
@@ -7,40 +7,40 @@
   "parameters": {
     "actuals": {
       "settlementDateFrom": "2026-01-01",
-      "settlementDateTo": "2026-01-31",
+      "settlementDateTo": "2026-02-01",
       "fuelType": "WIND"
     },
     "forecasts": {
       "publishDateTimeFrom": "2025-12-15T00:00:00Z",
-      "publishDateTimeTo": "2026-01-31T23:59:59Z"
+      "publishDateTimeTo": "2026-02-01T23:59:59Z"
     }
   },
   "row_counts": {
-    "actuals_raw": 1488,
-    "actuals_clean": 1488,
-    "forecasts_raw": 28032,
-    "forecasts_clean": 18080
+    "actuals_raw": 1536,
+    "actuals_clean": 1536,
+    "forecasts_raw": 28616,
+    "forecasts_clean": 18664
   },
   "date_ranges": {
     "actual_startTime": {
       "min": "2026-01-01T00:00:00Z",
-      "max": "2026-01-31T23:30:00Z"
+      "max": "2026-02-01T23:30:00Z"
     },
     "actual_publishTime": {
       "min": "2026-01-01T00:30:00Z",
-      "max": "2026-02-01T00:00:00Z"
+      "max": "2026-02-02T00:00:00Z"
     },
     "forecast_startTime": {
       "min": "2026-01-01T00:00:00Z",
-      "max": "2026-01-31T23:00:00Z"
+      "max": "2026-02-01T23:00:00Z"
     },
     "forecast_publishTime": {
       "min": "2025-12-30T02:30:00Z",
-      "max": "2026-01-31T22:30:00Z"
+      "max": "2026-02-01T22:30:00Z"
     }
   },
   "files": {
-    "actuals_wind_2026-01.csv.gz": 15255,
-    "forecasts_wind_2026-01.csv.gz": 123189
+    "actuals_wind_2026-01-01_2026-02-01.csv.gz": 15763,
+    "forecasts_wind_2026-01-01_2026-02-01.csv.gz": 127293
   }
 }
