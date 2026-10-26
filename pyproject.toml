@@ -1,0 +1,5 @@
+[project]
+name = "app"
+version = "0.1.0"
+dependencies = [ "fastapi==0.115.12", "pandas==2.3.3" ]
+requires-python = "==3.12.*"

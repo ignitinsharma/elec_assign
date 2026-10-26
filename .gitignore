@@ -9,3 +9,5 @@ data/raw/
 data/*.tmp
 .vercel/
 screenshots/
+.env.local
+.env.*.local

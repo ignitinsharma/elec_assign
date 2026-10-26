@@ -7,7 +7,7 @@
   "functions": {
     "api/index.py": {
       "includeFiles": "{backend/app/**,data/*.csv.gz,data/metadata.json,data/bias_diagnostics.json}",
-      "excludeFiles": "{backend/tests/**,backend/scripts/**,frontend/**,screenshots/**,data/validation_report.json,.venv/**}"
+      "excludeFiles": "{backend/tests/**,backend/scripts/**,frontend/**,screenshots/**,scripts/**,data/validation_report.json,.venv/**,**/__pycache__/**,**/.pytest_cache/**,AGENTS.md,CLAUDE.md,DESIGN.md}"
     }
   },
   "rewrites": [
